@@ -1,0 +1,12 @@
+{
+  "name": "keystone",
+  "version": "0.2.1",
+  "private": true,
+  "devDependencies": {
+    "shadow-cljs": "2.28.14"
+  },
+  "dependencies": {
+    "package.json": "^2.0.1",
+    "phaser": "^3.85.1"
+  }
+}
