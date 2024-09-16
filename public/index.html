@@ -3,12 +3,46 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>acme frontend</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>keystone</title>
+    <style media="screen" type="text/css">
+        body {
+            margin: 0;
+            background: black;
+        }
+
+        @font-face {
+            font-family: pixelmplus12;
+            src: url("/fonts/PixelMplus12-Regular.ttf");
+            font-weight: 400;
+            font-weight: normal;
+        }
+
+        .use-custom-font {
+            font-family: pixelmplus12;
+            position: absolute;
+            left: -100px;
+            top: 0px;
+            left: 0px;
+            visibility: hidden;
+        }
+
+        #editor {
+            position: fixed;
+            width: 50%;
+            height: 50%;
+            left: 25%;
+            top: 25%;
+            opacity: 90%;
+        }
+    </style>
 </head>
 
 <body>
     <div id="root"></div>
+    <div id="editor"></div>
     <script src="/js/main.js"></script>
+    <div class="use-custom-font">.</div>
 </body>
 
 </html>
