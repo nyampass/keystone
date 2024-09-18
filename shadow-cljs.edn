@@ -12,5 +12,4 @@
  :builds
  {:app
   {:target :browser
-   :modules {:main {:init-fn keystone.core/init}}
-   :compiler-options {:infer-externs true}}}}
+   :modules {:main {:init-fn keystone.system/init}}}}}
