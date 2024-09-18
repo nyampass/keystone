@@ -6,8 +6,11 @@
 (defclass Boot
   (extends phaser/Scene)
 
-  (constructor [this]
-               (prn :constructor)
+  (field next_scene_key)
+
+  (constructor [this next-scene-key]
+               (prn :constructor next-scene-key)
+               (set! (.-next-scene-key this) next-scene-key)
                (super #js {:key "boot"}))
 
   Object
@@ -19,8 +22,9 @@
   (create [this]
           (.start (.-scene this) "dev")))
 
-(defmethod ig/init-key :presentation.scenes/boot [_ _]
-  (Boot.))
+(defmethod ig/init-key :presentation.scenes/boot [_ {:keys [next]}]
+  (Boot. #js {:next next}))
+
 
 ;;     loader.tilemapTiledJSON("episode1", "/assets/map/episode1.json");
 ;;     loader.image(
