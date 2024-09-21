@@ -3,15 +3,35 @@
             [shadow.cljs.modern :refer [defclass]]
             ["phaser" :as phaser]))
 
+(defclass XX
+  (extends phaser/Scene)
+  (field a-b)
+  (constructor [this opts]
+               (prn :cons opts)
+               (set! (.-a-b this) (:v opts)))
+
+  Object
+  (sum [this] [a-b]))
+
+
+;; (XX. {:a 3})
+
+;; (.sum (XX. {:v 3}))
+
+;; (def x (B. 4 4))
+;; (.constructor x 1 2)
+
+;; (set! (.-a x) 3)
+;; (.-a  x)
+
 (defclass Boot
   (extends phaser/Scene)
 
-  (field next_scene_key)
+  (field next-scene-key)
 
-  (constructor [this next-scene-key]
-               (prn :constructor next-scene-key)
-               (set! (.-next-scene-key this) next-scene-key)
-               (super #js {:key "boot"}))
+  (constructor [this opts]
+               (super #js {:key "boot"})
+               (set! (.-next-scene-key this) (:next opts)))
 
   Object
   (preload [this]
@@ -23,7 +43,7 @@
           (.start (.-scene this) "dev")))
 
 (defmethod ig/init-key :presentation.scenes/boot [_ {:keys [next]}]
-  (Boot. #js {:next next}))
+  (Boot. {:next next}))
 
 
 ;;     loader.tilemapTiledJSON("episode1", "/assets/map/episode1.json");

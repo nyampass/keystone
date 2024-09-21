@@ -1,4 +1,4 @@
-(ns keystone.adapter.phaser
+(ns keystone.infrastructure.adapter.phaser
   (:require [integrant.core :as ig]
             ["phaser" :as phaser]))
 
@@ -18,6 +18,6 @@
                   :scene  scenes})]
     (phaser/Game. config)))
 
-(defmethod ig/init-key :adapter/phaser [_ opts]
+(defmethod ig/init-key :infrastructure.adapter/phaser [_ opts]
   (gen-game opts))
 

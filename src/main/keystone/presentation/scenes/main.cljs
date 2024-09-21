@@ -6,13 +6,13 @@
 (defclass Main
   (extends phaser/Scene)
 
-  (constructor [this]
-               (prn :constructor)
+  (constructor [this usecase]
+               (prn :constructor usecase)
                (super #js {:key "main"}))
 
   Object
-  (preload [this]
-           (prn :preload)
+  (preload [this repos]
+           (prn :preload repos)
            ;;  TODO load assets
            (let [loader (.-load this)]
              (.image loader "hoge")))
@@ -21,8 +21,8 @@
 
 
 
-(defmethod ig/init-key :presentation.scenes/main [_ _]
-  (Main.))
+(defmethod ig/init-key :presentation.scenes/main [_ {:keys [usecase]}]
+  (Main. usecase))
 
 
 ;;  (defclass MainZ
