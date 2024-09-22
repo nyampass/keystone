@@ -1,29 +1,43 @@
 (ns keystone.presentation.scenes.boot
   (:require [integrant.core :as ig]
+            [cljs.spec.alpha :as s]
             [shadow.cljs.modern :refer [defclass]]
-            ["phaser" :as phaser]))
+            [keystone.presentation.scenes.base :refer [Base]]))
+
+(s/def ::tilemaps (s/coll-of keyword?))
+
+(s/def ::images (s/coll-of keyword?))
+
+(s/def :spritesheet/name string?)
+(s/def ::spritesheets (s/map-of keyword? (s/keys :opt-un [:spritesheet/name])))
+
+(s/def ::assets (s/keys :req-un [(or ::tilemaps ::images ::spritesheets)]))
 
 (defclass Boot
-  (extends phaser/Scene)
+  (extends Base)
 
-  (field next_scene_key)
+  (field assets)
+  (field next-scene-key)
 
-  (constructor [this next-scene-key]
-               (prn :constructor next-scene-key)
-               (set! (.-next-scene-key this) next-scene-key)
-               (super #js {:key "boot"}))
+  (constructor [this opts]
+               (super #js {:key "boot"})
+               (set! (.-next-scene-key this) (name (:next opts)))
+               (set! (.-assets this) (:assets opts)))
 
   Object
   (preload [this]
-           (prn :preload)
-           ;;  TODO load assets
-           (let [loader (.-load this)]
-             (.image loader "hoge")))
+           (let [{:keys [tilemaps images spritesheet]} assets]
+             (prn [tilemaps images spritesheet])
+             (doseq [tilemap tilemaps]
+               (.load-tilemap this tilemap))))
   (create [this]
-          (.start (.-scene this) "dev")))
+          (.start (.-scene this) (.-next-scene-key this))))
 
-(defmethod ig/init-key :presentation.scenes/boot [_ {:keys [next]}]
-  (Boot. #js {:next next}))
+(defmethod ig/assert-key :presentation.scenes/boot [_ {:keys [assets]}]
+  (s/assert ::assets assets))
+
+(defmethod ig/init-key :presentation.scenes/boot [_ {:keys [next assets]}]
+  (Boot. {:next next :assets assets}))
 
 
 ;;     loader.tilemapTiledJSON("episode1", "/assets/map/episode1.json");
