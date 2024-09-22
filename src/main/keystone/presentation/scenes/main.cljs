@@ -1,55 +1,24 @@
 (ns keystone.presentation.scenes.main
   (:require [integrant.core :as ig]
             [shadow.cljs.modern :refer [defclass]]
-            ["phaser" :as phaser]))
+            [keystone.presentation.scenes.base :refer [Base]]))
 
 (defclass Main
-  (extends phaser/Scene)
+  (extends Base)
+
+  (field usecase)
 
   (constructor [this usecase]
-               (prn :constructor usecase)
-               (super #js {:key "main"}))
+               (super #js {:key "main"})
+               (set! (.-usecase this) usecase))
 
   Object
-  (preload [this repos]
-           (prn :preload repos)
-           ;;  TODO load assets
-           (let [loader (.-load this)]
-             (.image loader "hoge")))
   (create [this]
-          (.start (.-scene this) "dev")))
-
+          (.disable-cursor this)))
 
 
 (defmethod ig/init-key :presentation.scenes/main [_ {:keys [usecase]}]
   (Main. usecase))
-
-
-;;  (defclass MainZ
-;;    (extends phaser/Scene)
-
-
-
-;;    (constructor [this]
-;;                 (prn :constructor)
-;;                 (super #js {:key "main"}))
-
-;;    Object
-;;    (hoge [this]))
-
-
-
-;;  Object
-;;  (preload [this]
-;;           (prn :preload)
-;;            ;;  TODO load assets
-;;           (let [loader (.-load this)]
-;;             (.image loader "hoge")))
-;;  (create [this]
-;;          (.start (.-scene this) "dev")))
-
-;; (defmethod ig/init-key :presentation.scenes/boot [_ _]
-;;   (Boot.))
 
 ;; import Phaser from "phaser";
 ;; import { Direction, Input, MessageEventKey } from "../../infra/adapter/input";
@@ -63,9 +32,6 @@
 ;; import { IScriptUsecase } from "../../domain/usecase/iscript";
 
 ;; export class Main extends Phaser.Scene {
-;;   storylineUsecase: IStorylineUsecase;
-;;   script: IScriptUsecase;
-
 ;;   _input!: Input;
 ;;   _player!: Player;
 ;;   hitting: number | undefined;
@@ -74,14 +40,7 @@
 ;;   touch: string | undefined;
 ;;   moving: number[] | undefined;
 
-;;   constructor({ storyline, script }: { storyline: IStorylineUsecase; script: IScriptUsecase }) {
-;;     super({ key: "main" });
-;;     this.storylineUsecase = storyline;
-;;     this.script = script;
-;;   }
-
 ;;   create() {
-;;     this.game.canvas.style.cursor = "none";
 ;;     const map = this.make.tilemap({
 ;;       key: "episode1",
 ;;       tileWidth: 64,
