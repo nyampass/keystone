@@ -13,9 +13,10 @@
     :assets {:tilemaps [:episode1]
              :images [:the_japan_collection_overgrown_backstreets
                       :spritesheet_32x32]
-             :spritesheets {:items {:name "spritsheet_32x32.png"}
-                            :nerd {}
-                            :player {}}}}
+             :spritesheets {:items {:name "spritesheet_32x32.png"
+                                    :size [32 32]}
+                            :nerd {:size [180 150]}
+                            :player {:size [180 150]}}}}
    :presentation.scenes/main {:usecases {:storyline (ig/ref :usecase/storyline)}}
 
    :usecase/storyline {}

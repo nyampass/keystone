@@ -9,7 +9,8 @@
 (s/def ::images (s/coll-of keyword?))
 
 (s/def :spritesheet/name string?)
-(s/def ::spritesheets (s/map-of keyword? (s/keys :opt-un [:spritesheet/name])))
+(s/def :spritesheet/size (s/coll-of number? :count 2))
+(s/def ::spritesheets (s/map-of keyword? (s/keys :req-un [:spritesheet/size] :opt-un [:spritesheet/name])))
 
 (s/def ::assets (s/keys :req-un [(or ::tilemaps ::images ::spritesheets)]))
 
@@ -26,10 +27,14 @@
 
   Object
   (preload [this]
-           (let [{:keys [tilemaps images spritesheet]} assets]
-             (prn [tilemaps images spritesheet])
+           (let [{:keys [tilemaps images spritesheets]} assets]
              (doseq [tilemap tilemaps]
-               (.load-tilemap this tilemap))))
+               (.load-tilemap this (str "tilemaps/" (name tilemap))))
+             (doseq [image images]
+               (.load-image this (str "images/" (name image))))
+             (doseq [[key opts] spritesheets]
+               (let [path (or (:name opts) (str (name key) ".png"))]
+                 (.load-spritesheet this (name key) (str "spritesheets/" path) (:size opts))))))
   (create [this]
           (.start (.-scene this) (.-next-scene-key this))))
 
@@ -39,8 +44,6 @@
 (defmethod ig/init-key :presentation.scenes/boot [_ {:keys [next assets]}]
   (Boot. {:next next :assets assets}))
 
-
-;;     loader.tilemapTiledJSON("episode1", "/assets/map/episode1.json");
 ;;     loader.image(
 ;;       "the_japan_collection_overgrown_backstreets",
 ;;       "/assets/spritesheet/the_japan_collection_overgrown_backstreets.png",

@@ -16,6 +16,14 @@
    [this]
    (set! (-> this .-game .-canvas .-style .-cursor) "none"))
 
-  (load-tilemap [this key]
-                (.tilemapTiledJSON (.-load this) (name key))))
+  (load-tilemap [this path]
+                (.tilemapTiledJSON (.-load this) path))
+
+  (load-image [this name path]
+              (.image (.-load this) name path))
+
+  (load-spritesheet [this name path size]
+                    (let [[width height] size]
+                      (.spritesheet (.-load this) name path
+                                    (js-obj "frameWidth" width "frameHeight" height)))))
 
