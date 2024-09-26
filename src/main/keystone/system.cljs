@@ -17,15 +17,19 @@
                                     :size [32 32]}
                             :nerd {:size [180 150]}
                             :player {:size [180 150]}}}}
-   :presentation.scenes/main {:usecases {:storyline (ig/ref :usecase/storyline)}}
+
+   :presentation.scenes/main
+   {:usecases {:storyline (ig/ref :usecase/storyline)}
+    :tilemaps [{:name :episode1 :width 64 :height 64}]}
 
    :usecase/storyline {}
 
    :infrastructure.repository/memory {}
 
-   :infrastructure.adapter/phaser {:scenes [(ig/ref :presentation.scenes/boot)
-                                            (ig/ref :presentation.scenes/main)]
-                                   :width 1600 :height 1200}})
+   :infrastructure.adapter/phaser
+   {:scenes [(ig/ref :presentation.scenes/boot)
+             (ig/ref :presentation.scenes/main)]
+    :width 1600 :height 1200}})
 
 (defn init []
   (s/check-asserts true)

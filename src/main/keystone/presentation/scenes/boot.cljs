@@ -36,6 +36,7 @@
                (let [path (or (:name opts) (str (name key) ".png"))]
                  (.load-spritesheet this (name key) (str "spritesheets/" path) (:size opts))))))
   (create [this]
+          (prn :next-scene (.-next-scene-key this))
           (.start (.-scene this) (.-next-scene-key this))))
 
 (defmethod ig/assert-key :presentation.scenes/boot [_ {:keys [assets]}]

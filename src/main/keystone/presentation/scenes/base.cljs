@@ -25,5 +25,8 @@
   (load-spritesheet [this name path size]
                     (let [[width height] size]
                       (.spritesheet (.-load this) name path
-                                    (js-obj "frameWidth" width "frameHeight" height)))))
+                                    (js-obj "frameWidth" width "frameHeight" height))))
+
+  (gen-tilemap [this name width height]
+               (.tilemap this (js-obj :key name :tileWidth width :tileHeight height))))
 

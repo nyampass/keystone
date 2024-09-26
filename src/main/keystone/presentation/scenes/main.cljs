@@ -7,18 +7,27 @@
   (extends Base)
 
   (field usecase)
+  (field setup)
+  (field tilemaps)
 
-  (constructor [this usecase]
+  (constructor [this usecase tilemaps]
+               (prn :constructor)
                (super #js {:key "main"})
-               (set! (.-usecase this) usecase))
+               (set! (.-usecase this) usecase)
+               (set! (.-setup this)
+                     (fn [this]
+                       (set! (.-tilemaps this) (map (fn [{:keys [name width height]}] (gen-tilemap name width height)) tilemaps))
+                       (prn :done))))
 
   Object
   (create [this]
-          (.disable-cursor this)))
+          (prn :create)
+          (.disable-cursor this)
+          (setup this)))
 
 
-(defmethod ig/init-key :presentation.scenes/main [_ {:keys [usecase]}]
-  (Main. usecase))
+(defmethod ig/init-key :presentation.scenes/main [_ {:keys [usecase tilemaps]}]
+  (Main. usecase tilemaps))
 
 ;; import Phaser from "phaser";
 ;; import { Direction, Input, MessageEventKey } from "../../infra/adapter/input";
