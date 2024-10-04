@@ -4,6 +4,21 @@
             ["phaser" :as phaser]))
 
 
+(defrecord Map [map])
+
+(defprotocol MapBehavior
+  (add-tileset-image! [this tileset-name])
+  (create-layer! [this layer-name tilesets]))
+
+(extend-type Map
+  MapBehavior
+  (add-tileset-image! [this tileset-name]
+    (prn :name name)
+    (.addTilesetImage (:map this) (name tileset-name)))
+  (create-layer! [this layer-name tilesets]
+    (prn :hoge (.-layers (:map this)))
+    (.createLayer (:map this) (name layer-name) tilesets)))
+
 (defclass Base
   (extends phaser/Scene)
 
@@ -28,5 +43,5 @@
                                     (js-obj "frameWidth" width "frameHeight" height))))
 
   (gen-tilemap [this name width height]
-               (.tilemap this (js-obj :key name :tileWidth width :tileHeight height))))
+               (->Map (.tilemap (.-make this) (js-obj :key name :tileWidth width :tileHeight height)))))
 

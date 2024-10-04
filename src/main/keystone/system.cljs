@@ -20,7 +20,8 @@
 
    :presentation.scenes/main
    {:usecases {:storyline (ig/ref :usecase/storyline)}
-    :tilemaps [{:name :episode1 :width 64 :height 64}]}
+    :tilemap {:name :episode1 :width 64 :height 64}
+    :tilesets [:items :nerd :player]}
 
    :usecase/storyline {}
 
