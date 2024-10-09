@@ -1,35 +1,32 @@
 (ns keystone.system
   (:require [integrant.core :as ig]
             [cljs.spec.alpha :as s]
-            [keystone.application.usecase]
-            [keystone.infrastructure.repository]
-            [keystone.infrastructure.adapter.phaser]
-            [keystone.presentation.scenes.boot]
-            [keystone.presentation.scenes.main]))
+            [keystone.models.usecase]
+            [keystone.services.phaser]
+            [keystone.scenes.boot]
+            [keystone.scenes.main]))
 
 (def config
-  {:presentation.scenes/boot
-   {:next :main
-    :assets {:tilemaps [:episode1]
-             :images [:the_japan_collection_overgrown_backstreets
-                      :spritesheet_32x32]
-             :spritesheets {:items {:name "spritesheet_32x32.png"
-                                    :size [32 32]}
-                            :nerd {:size [180 150]}
-                            :player {:size [180 150]}}}}
+  {:scenes/boot {:next :main
+                 :assets {:tilemaps [:episode1]
+                          :images [:the_japan_collection_overgrown_backstreets
+                                   :spritesheet_32x32]
+                          :spritesheets {:items {:name "spritesheet_32x32.png"
+                                                 :size [32 32]}
+                                         :nerd {:size [180 150]}
+                                         :player {:size [180 150]}}}}
 
-   :presentation.scenes/main
-   {:usecases {:storyline (ig/ref :usecase/storyline)}
+   :scenes/main
+   {;; :usecases {:storyline (ig/ref :usecase/storyline)}
     :tilemap {:name :episode1 :width 64 :height 64}
     :tilesets [:items :nerd :player]}
 
-   :usecase/storyline {}
+  ;;  :usecase/storyline {}
 
-   :infrastructure.repository/memory {}
 
-   :infrastructure.adapter/phaser
-   {:scenes [(ig/ref :presentation.scenes/boot)
-             (ig/ref :presentation.scenes/main)]
+   :services/phaser
+   {:scenes [(ig/ref :scenes/boot)
+             (ig/ref :scenes/main)]
     :width 1600 :height 1200}})
 
 (defn init []

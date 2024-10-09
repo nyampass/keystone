@@ -1,4 +1,4 @@
-(ns keystone.presentation.scenes.base
+(ns keystone.scenes.base
   (:require [integrant.core :as ig]
             [shadow.cljs.modern :refer [defclass]]
             ["phaser" :as phaser]))
@@ -16,7 +16,7 @@
     (prn :name name)
     (.addTilesetImage (:map this) (name tileset-name)))
   (create-layer! [this layer-name tilesets]
-    (prn :hoge (.-layers (:map this)))
+    (prn :hoge3333 (.-layers (:map this)))
     (.createLayer (:map this) (name layer-name) tilesets)))
 
 (defclass Base
@@ -39,8 +39,11 @@
 
   (load-spritesheet [this name path size]
                     (let [[width height] size]
-                      (.spritesheet (.-load this) name path
-                                    (js-obj "frameWidth" width "frameHeight" height))))
+                      (prn 3)
+                      ;; (.spritesheet (.-load this)
+                      ;;               name path
+                      ;;               (js-obj "frameWidth" width "frameHeight" height))
+                      ))
 
   (gen-tilemap [this name width height]
                (->Map (.tilemap (.-make this) (js-obj :key name :tileWidth width :tileHeight height)))))

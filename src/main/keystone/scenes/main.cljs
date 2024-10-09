@@ -1,7 +1,7 @@
-(ns keystone.presentation.scenes.main
+(ns keystone.scenes.main
   (:require [integrant.core :as ig]
             [shadow.cljs.modern :refer [defclass]]
-            [keystone.presentation.scenes.base :refer [Base add-tileset-image! create-layer!]]))
+            [keystone.scenes.base :refer [Base add-tileset-image! create-layer!]]))
 
 (defclass Main
   (extends Base)
@@ -31,7 +31,7 @@
           (setup-fn this)))
 
 
-(defmethod ig/init-key :presentation.scenes/main [_ {:keys [usecase tilemap tilesets]}]
+(defmethod ig/init-key :scenes/main [_ {:keys [usecase tilemap tilesets]}]
   (Main. usecase tilemap tilesets))
 
 ;;     const tilesets = [
