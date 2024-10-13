@@ -29,9 +29,9 @@
   (preload [this]
            (let [{:keys [tilemaps images spritesheets]} assets]
              (doseq [tilemap tilemaps]
-               (.load-tilemap this (str "tilemaps/" (name tilemap))))
+               (.load-tilemap this (name tilemap) (str "tilemaps/" (name tilemap) ".json")))
              (doseq [image images]
-               (.load-image this (str "images/" (name image))))
+               (.load-image this (name image) (str "images/" (name image) ".png")))
              (doseq [[key opts] spritesheets]
                (let [path (or (:name opts) (str (name key) ".png"))]
                  (.load-spritesheet this (name key) (str "spritesheets/" path) (:size opts))))))

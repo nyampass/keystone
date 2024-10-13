@@ -3,21 +3,23 @@
             [shadow.cljs.modern :refer [defclass]]
             ["phaser" :as phaser]))
 
+(clj->js (map inc [1 2 3]))
+
 
 (defrecord Map [map])
 
 (defprotocol MapBehavior
   (add-tileset-image! [this tileset-name])
-  (create-layer! [this layer-name tilesets]))
+  (create-layer! [this layer-name tilesets scale]))
 
 (extend-type Map
   MapBehavior
   (add-tileset-image! [this tileset-name]
-    (prn :name name)
     (.addTilesetImage (:map this) (name tileset-name)))
-  (create-layer! [this layer-name tilesets]
-    (prn :hoge3333 (.-layers (:map this)))
-    (.createLayer (:map this) (name layer-name) tilesets)))
+  (create-layer! [this layer-name tilesets scale]
+    (.setScale
+     (.createLayer (:map this) (name layer-name) (clj->js tilesets))
+     scale)))
 
 (defclass Base
   (extends phaser/Scene)
@@ -31,20 +33,19 @@
    [this]
    (set! (-> this .-game .-canvas .-style .-cursor) "none"))
 
-  (load-tilemap [this path]
-                (.tilemapTiledJSON (.-load this) path))
+  (load-tilemap [this name path]
+                (.tilemapTiledJSON (.-load this) name path))
 
   (load-image [this name path]
               (.image (.-load this) name path))
 
   (load-spritesheet [this name path size]
                     (let [[width height] size]
-                      (prn 3)
-                      ;; (.spritesheet (.-load this)
-                      ;;               name path
-                      ;;               (js-obj "frameWidth" width "frameHeight" height))
-                      ))
+                      (.spritesheet (.-load this)
+                                    name path
+                                    (js-obj "frameWidth" width "frameHeight" height))))
 
   (gen-tilemap [this name width height]
-               (->Map (.tilemap (.-make this) (js-obj :key name :tileWidth width :tileHeight height)))))
+               (->Map (.tilemap (.-make this) (js-obj "key" name "tileWidth" width "tileHeight" height)))))
+
 

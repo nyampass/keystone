@@ -18,11 +18,10 @@
                (set! (.-setup-fn this)
                      (fn [this]
                        (set! (.-tilemap this) (let [{:keys [name width height]} tilemap]
-                                                (prn :name (cljs.core/name name))
                                                 (.gen-tilemap this (cljs.core/name name) width height)))
-                       (set! (.-tilesets this) (map #(add-tileset-image! (.-tilemap this) %)
-                                                    tilesets))
-                       (create-layer! (.-tilemap this) "ground" (.-tilesets this)))))
+                       (set! (.-tilesets this) (clj->js (map #(add-tileset-image! (.-tilemap this) %)
+                                                             tilesets)))
+                       (create-layer! (.-tilemap this) "ground" (.-tilesets this) 1.5))))
 
   Object
   (create [this]
@@ -33,12 +32,6 @@
 
 (defmethod ig/init-key :scenes/main [_ {:keys [usecase tilemap tilesets]}]
   (Main. usecase tilemap tilesets))
-
-;;     const tilesets = [
-;;       map.addTilesetImage("the_japan_collection_overgrown_backstreets")!,
-;;       map.addTilesetImage("spritesheet_32x32")!,
-;;     ];
-;;     map.createLayer("ground", tilesets)?.setScale(1.5);
 
 ;;     const { stones } = entities.generator(this, map.objects[0]);
 

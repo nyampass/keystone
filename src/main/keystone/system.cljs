@@ -19,7 +19,8 @@
    :scenes/main
    {;; :usecases {:storyline (ig/ref :usecase/storyline)}
     :tilemap {:name :episode1 :width 64 :height 64}
-    :tilesets [:items :nerd :player]}
+    :tilesets [:the_japan_collection_overgrown_backstreets
+               :spritesheet_32x32]}
 
   ;;  :usecase/storyline {}
 
