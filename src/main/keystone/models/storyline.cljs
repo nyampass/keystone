@@ -1,4 +1,4 @@
-(ns keystone.application.usecase.storyline)
+(ns keystone.models.storyline)
 
 (defn load-storylines [repos]
   (prn :load :repos repos))

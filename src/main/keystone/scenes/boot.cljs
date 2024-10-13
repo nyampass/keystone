@@ -1,8 +1,8 @@
-(ns keystone.presentation.scenes.boot
+(ns keystone.scenes.boot
   (:require [integrant.core :as ig]
             [cljs.spec.alpha :as s]
             [shadow.cljs.modern :refer [defclass]]
-            [keystone.presentation.scenes.base :refer [Base]]))
+            [keystone.scenes.base :refer [Base]]))
 
 (s/def ::tilemaps (s/coll-of keyword?))
 
@@ -29,19 +29,20 @@
   (preload [this]
            (let [{:keys [tilemaps images spritesheets]} assets]
              (doseq [tilemap tilemaps]
-               (.load-tilemap this (str "tilemaps/" (name tilemap))))
+               (.load-tilemap this (name tilemap) (str "tilemaps/" (name tilemap) ".json")))
              (doseq [image images]
-               (.load-image this (str "images/" (name image))))
+               (.load-image this (name image) (str "images/" (name image) ".png")))
              (doseq [[key opts] spritesheets]
                (let [path (or (:name opts) (str (name key) ".png"))]
                  (.load-spritesheet this (name key) (str "spritesheets/" path) (:size opts))))))
   (create [this]
+          (prn :next-scene (.-next-scene-key this))
           (.start (.-scene this) (.-next-scene-key this))))
 
-(defmethod ig/assert-key :presentation.scenes/boot [_ {:keys [assets]}]
+(defmethod ig/assert-key :scenes/boot [_ {:keys [assets]}]
   (s/assert ::assets assets))
 
-(defmethod ig/init-key :presentation.scenes/boot [_ {:keys [next assets]}]
+(defmethod ig/init-key :scenes/boot [_ {:keys [next assets]}]
   (Boot. {:next next :assets assets}))
 
 ;;     loader.image(

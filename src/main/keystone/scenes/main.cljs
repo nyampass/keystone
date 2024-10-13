@@ -1,56 +1,37 @@
-(ns keystone.presentation.scenes.main
+(ns keystone.scenes.main
   (:require [integrant.core :as ig]
             [shadow.cljs.modern :refer [defclass]]
-            [keystone.presentation.scenes.base :refer [Base]]))
+            [keystone.scenes.base :refer [Base add-tileset-image! create-layer!]]))
 
 (defclass Main
   (extends Base)
 
   (field usecase)
+  (field setup-fn)
+  (field tilemap)
+  (field tilesets)
 
-  (constructor [this usecase]
+  (constructor [this usecase tilemap tilesets]
+               (prn :constructor)
                (super #js {:key "main"})
-               (set! (.-usecase this) usecase))
+               (set! (.-usecase this) usecase)
+               (set! (.-setup-fn this)
+                     (fn [this]
+                       (set! (.-tilemap this) (let [{:keys [name width height]} tilemap]
+                                                (.gen-tilemap this (cljs.core/name name) width height)))
+                       (set! (.-tilesets this) (clj->js (map #(add-tileset-image! (.-tilemap this) %)
+                                                             tilesets)))
+                       (create-layer! (.-tilemap this) "ground" (.-tilesets this) 1.5))))
 
   Object
   (create [this]
-          (.disable-cursor this)))
+          (prn :create)
+          (.disable-cursor this)
+          (setup-fn this)))
 
 
-(defmethod ig/init-key :presentation.scenes/main [_ {:keys [usecase]}]
-  (Main. usecase))
-
-;; import Phaser from "phaser";
-;; import { Direction, Input, MessageEventKey } from "../../infra/adapter/input";
-;; import { randomNPCs } from "../entities/npc";
-;; import { Player } from "../entities/player";
-;; import * as entities from "../entities";
-;; import { Message } from "../components/message";
-;; import { Printer } from "../components/printer";
-;; import { Editor } from "../components/editor";
-;; import { IStorylineUsecase } from "../../domain/usecase/istoryline";
-;; import { IScriptUsecase } from "../../domain/usecase/iscript";
-
-;; export class Main extends Phaser.Scene {
-;;   _input!: Input;
-;;   _player!: Player;
-;;   hitting: number | undefined;
-;;   hit: number | undefined;
-;;   touching: string | undefined;
-;;   touch: string | undefined;
-;;   moving: number[] | undefined;
-
-;;   create() {
-;;     const map = this.make.tilemap({
-;;       key: "episode1",
-;;       tileWidth: 64,
-;;       tileHeight: 64,
-;;     });
-;;     const tilesets = [
-;;       map.addTilesetImage("the_japan_collection_overgrown_backstreets")!,
-;;       map.addTilesetImage("spritesheet_32x32")!,
-;;     ];
-;;     map.createLayer("ground", tilesets)?.setScale(1.5);
+(defmethod ig/init-key :scenes/main [_ {:keys [usecase tilemap tilesets]}]
+  (Main. usecase tilemap tilesets))
 
 ;;     const { stones } = entities.generator(this, map.objects[0]);
 
