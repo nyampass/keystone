@@ -3,14 +3,12 @@
             [shadow.cljs.modern :refer [defclass]]
             ["phaser" :as phaser]))
 
-(clj->js (map inc [1 2 3]))
-
-
 (defrecord Map [map])
 
 (defprotocol MapBehavior
   (add-tileset-image! [this tileset-name])
-  (create-layer! [this layer-name tilesets scale]))
+  (create-layer! [this layer-name tilesets scale])
+  (objects [this]))
 
 (extend-type Map
   MapBehavior
@@ -19,7 +17,9 @@
   (create-layer! [this layer-name tilesets scale]
     (.setScale
      (.createLayer (:map this) (name layer-name) (clj->js tilesets))
-     scale)))
+     scale))
+  (objects [this]
+    (.-objects (:map this))))
 
 (defclass Base
   (extends phaser/Scene)
@@ -46,6 +46,10 @@
                                     (js-obj "frameWidth" width "frameHeight" height))))
 
   (gen-tilemap [this name width height]
-               (->Map (.tilemap (.-make this) (js-obj "key" name "tileWidth" width "tileHeight" height)))))
+               (->Map (.tilemap (.-make this) (js-obj "key" name "tileWidth" width "tileHeight" height))))
+
+
+  (static-physics-sprite! [this name x y gid scale]
+                          (.setScale (.staticSprite (-> this .-physics .-add) x y name gird) scale)))
 
 
