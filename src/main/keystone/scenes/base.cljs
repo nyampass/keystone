@@ -8,7 +8,7 @@
 (defprotocol MapBehavior
   (add-tileset-image! [this tileset-name])
   (create-layer! [this layer-name tilesets scale])
-  (objects [this]))
+  (object-props [this index]))
 
 (extend-type Map
   MapBehavior
@@ -18,8 +18,17 @@
     (.setScale
      (.createLayer (:map this) (name layer-name) (clj->js tilesets))
      scale))
-  (objects [this]
-    (.-objects (:map this))))
+  (object-props [this index]
+    (prn [333, (:map this)])
+    (letfn [(retrive-prop [object-layer]
+              {:x (.-x object-layer)
+               :y (.-y object-layer)
+               :gid (.-gid object-layer)})]
+      (map retrive-prop (-> this
+                            :map
+                            .-objects
+                            (aget index)
+                            .-objects)))))
 
 (defclass Base
   (extends phaser/Scene)
@@ -50,6 +59,6 @@
 
 
   (static-physics-sprite! [this name x y gid scale]
-                          (.setScale (.staticSprite (-> this .-physics .-add) x y name gird) scale)))
+                          (.setScale (.staticSprite (-> this .-physics .-add) x y name gid) scale)))
 
 

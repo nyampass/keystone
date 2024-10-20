@@ -1,10 +1,8 @@
 (ns keystone.scenes.main
   (:require [integrant.core :as ig]
             [shadow.cljs.modern :refer [defclass]]
-            [keystone.scenes.base :refer [Base add-tileset-image! create-layer!]]
+            [keystone.scenes.base :refer [Base add-tileset-image! create-layer! object-props]]
             [keystone.components.entities.stone :refer [gen-stone]]))
-
-(prn gen-stone)
 
 (defclass Main
   (extends Base)
@@ -13,6 +11,8 @@
   (field setup-fn)
   (field tilemap)
   (field tilesets)
+
+  (field stones)
 
   (constructor [this usecase tilemap tilesets]
                (prn :constructor)
@@ -26,45 +26,27 @@
                                                              tilesets)))
                        (create-layer! (.-tilemap this) "ground" (.-tilesets this) 1.5)
 
-                       (prn (.objects (.-tilemap this))))))
+                       (let [objects (-> (.-tilemap this) (object-props 0))]
+                         (prn :objects objects)
+                         (set! (.-stones this)
+                               (map (fn [{:keys [x y gid]}]
+                                      (prn x y gid)
+                                      (.setScale (.staticSprite (-> this .-physics .-add) (* x 1.5) (* y 1.5) "items" (- gid 1261)) 1.5))
+                                    objects))
+                         (prn (.-stones this))))))
 
   Object
   (create [this]
-          (prn :create-3)
           (.disable-cursor this)
           (setup-fn this)))
 
-
-;; export class Stone {
-;;   id: number;
-;;   sprite: Phaser.Types.Physics.Arcade.SpriteWithStaticBody;
-;;   param: Parameter;
-
-;;   constructor(id: number, scene: Scene, x: number, y: number, gid: number) {
-;;     this.id = id;
-;;     this.sprite = scene.physics.add
-;;       .staticSprite(x, y, "items", gid)
-;;       .setScale(1.5);
-;;     this.param = {dir:0}
-;;   }
-;; }
-
-;; (def generate [scene objects]
-;;   (map (fn [{:keys [id x y gid]}]
-;;          (prn [id x y gid])
-;;          (gen-stone id scene (* x 1.5) (* y 1.5) (- gid 1261))
-;;        objects)))
 (def main (atom nil))
-
-
 
 (defmethod ig/init-key :scenes/main [_ {:keys [usecase tilemap tilesets]}]
   (let [_main (Main. usecase tilemap tilesets)]
     (prn :main)
     (reset! main _main)
     _main))
-
-;;     const { stones } = entities.generator(this, map.objects[0]);
 
 ;;     const npcs = randomNPCs(this);
 ;;     this._player = new Player(this);
