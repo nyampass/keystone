@@ -1,4 +1,4 @@
-(ns keystone.frameworks.phaser
+(ns frameworks.phaser.core
   (:require [integrant.core :as ig]
             ["phaser" :as phaser]))
 

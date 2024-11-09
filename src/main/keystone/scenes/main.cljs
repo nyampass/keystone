@@ -1,7 +1,7 @@
 (ns keystone.scenes.main
   (:require [integrant.core :as ig]
             [shadow.cljs.modern :refer [defclass]]
-            [keystone.scenes.base :refer [Base add-tileset-image! create-layer! object-props]]
+            [frameworks.phaser.scenes :as sc]
             [keystone.components.entities.stone :refer [gen-stone]]))
 
 (defclass Main
@@ -47,6 +47,11 @@
     (prn :main)
     (reset! main _main)
     _main))
+
+(* (.random js/Math)
+   (-> @main .-sys .-game .-canvas .-width))
+(* (.random js/Math)
+   (-> @main .-sys .-game .-canvas .-height))
 
 ;;     const npcs = randomNPCs(this);
 ;;     this._player = new Player(this);

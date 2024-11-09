@@ -1,10 +1,10 @@
 (ns keystone.system
   (:require [integrant.core :as ig]
             [cljs.spec.alpha :as s]
-            [keystone.frameworks.phaser]
-            [keystone.models.usecase]
+            [frameworks.phaser.core]
             [keystone.scenes.boot]
-            [keystone.scenes.main]))
+            ;; [keystone.scenes.main]
+            ))
 
 (def config
   {:scenes/boot {:next :main
@@ -16,16 +16,15 @@
                                          :nerd {:size [180 150]}
                                          :player {:size [180 150]}}}}
 
-   :scenes/main
-   {:tilemap {:name :episode1 :width 64 :height 64}
-    :tilesets [:the_japan_collection_overgrown_backstreets
-               :spritesheet_32x32]}
-
-   :usecase/storyline {}
+  ;;  :scenes/main
+  ;;  {:tilemap {:name :episode1 :width 64 :height 64}
+  ;;   :tilesets [:the_japan_collection_overgrown_backstreets
+  ;;              :spritesheet_32x32]}
 
    :frameworks/phaser
    {:scenes [(ig/ref :scenes/boot)
-             (ig/ref :scenes/main)]
+            ;;  (ig/ref :scenes/main)
+             ]
     :width 1600 :height 1200}})
 
 (defn init []
