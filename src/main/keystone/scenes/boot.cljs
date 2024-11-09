@@ -13,40 +13,17 @@
 
 (s/def ::assets (s/keys :req-un [(or ::tilemaps ::images ::spritesheets)]))
 
-;; (defclass Boot
-;;   (extends Base)
-
-;;   (field assets)
-;;   (field next-scene-key)
-
-;;   (constructor [this opts]
-;;                (super #js {:key "boot"})
-;;                (set! (.-next-scene-key this) (name (:next opts)))
-;;                (set! (.-assets this) (:assets opts)))
-
-;;   Object
-;;   (preload [this]
-;;            (let [{:keys [tilemaps images spritesheets]} assets]
-;;              (doseq [tilemap tilemaps]
-;;                (.load-tilemap this (name tilemap) (str "tilemaps/" (name tilemap) ".json")))
-;;              (doseq [image images]
-;;                (.load-image this (name image) (str "images/" (name image) ".png")))
-;;              (doseq [[key opts] spritesheets]
-;;                (let [path (or (:name opts) (str (name key) ".png"))]
-;;                  (.load-spritesheet this (name key) (str "spritesheets/" path) (:size opts))))))
-;;   (create [this]
-;;           (prn :next-scene (.-next-scene-key this))
-;;           (.start (.-scene this) (.-next-scene-key this))))
-
 (defmethod ig/assert-key :scenes/boot [_ {:keys [assets]}]
   (s/assert ::assets assets))
 
 (defn gen-boot-scene [{:keys [next assets]}]
   (sc/gen-scene
    :boot
-   {:init (fn [this])
+   {:init (fn [_this] (prn "start boot"))
     :preload (fn [this]
+               (prn "preload boot")
                (let [{:keys [tilemaps images spritesheets]} assets]
+                 (prn :preload tilemaps)
                  (doseq [tilemap tilemaps]
                    (sc/load-tilemap this (name tilemap) (str "tilemaps/" (name tilemap) ".json")))
                  (doseq [image images]
@@ -55,7 +32,7 @@
                    (let [path (or (:name opts) (str (name key) ".png"))]
                      (sc/load-spritesheet this (name key) (str "spritesheets/" path) (:size opts))))))
     :created (fn [this]
-               (prn :created)
+               (prn "created boot")
                (sc/start-scene! this next))}))
 
 (defmethod ig/init-key :scenes/boot [_ opts]

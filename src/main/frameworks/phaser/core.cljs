@@ -15,9 +15,8 @@
                           :autoCenter (-> phaser .-Scale .-CENTER_BOTH),
                           :width width,
                           :height height},
-                  :scene  scenes})]
+                  :scene (clj->js scenes)})]
     (phaser/Game. config)))
 
 (defmethod ig/init-key :frameworks/phaser [_ opts]
   (gen-game opts))
-

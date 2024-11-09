@@ -1,6 +1,5 @@
 (ns frameworks.phaser.scene
-  (:require [integrant.core :as ig]
-            [shadow.cljs.modern :refer [defclass]]
+  (:require [shadow.cljs.modern :refer [defclass]]
             ["phaser" :as phaser]))
 
 (defrecord Map [map])
@@ -19,7 +18,6 @@
      (.createLayer (:map this) (name layer-name) (clj->js tilesets))
      scale))
   (object-props [this index]
-    (prn [333, (:map this)])
     (letfn [(retrive-prop [object-layer]
               {:x (.-x object-layer)
                :y (.-y object-layer)
@@ -31,6 +29,7 @@
                             .-objects)))))
 
 (defn load-tilemap [scene name path]
+  (prn :load-tilemap scene name path)
   (.tilemapTiledJSON (.-load scene) name path))
 
 (defn load-image [scene name path]
@@ -60,17 +59,18 @@
 
   (constructor
    [this scene-name callbacks]
-   (super scene-name)
-   (set! (.-callbacks this) callbacks))
+   (super (clj->js {:key scene-name}))
+   (set! (.-callbacks this) callbacks)
+   (when-let [init (:init callbacks)]
+     (init this)))
 
   Object
   (preload [this]
-           (prn :preload callbacks)
+           (prn :preload (.-this name) callbacks)
            (when-let [preload (:preload callbacks)]
              (preload this)))
 
   (create [this]
-          (prn :create callbacks)
           (when-let [created (:created callbacks)]
             (created this))))
 
