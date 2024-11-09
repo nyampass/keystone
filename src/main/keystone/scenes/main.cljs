@@ -2,6 +2,7 @@
   (:require [integrant.core :as ig]
             [shadow.cljs.modern :refer [defclass]]
             [frameworks.phaser.scene :as sc]
+            [keystone.components.entities.npc :as npc]
             ;; [keystone.components.entities.stone :refer [gen-stone]]
             ))
 
@@ -18,13 +19,12 @@
                                    tilesets))]
         (prn :hoge tilemap tilesets)
         (sc/create-layer! tilemap "ground" tilesets 1.5)
-        (let [objects (sc/object-props tilemap 0)]
-          (prn :objects objects)
-          (set! (.-stones this)
-                (map (fn [{:keys [x y gid]}]
-                       (.setScale (.staticSprite (-> this .-physics .-add) (* x 1.5) (* y 1.5) "items" (- gid 1261)) 1.5))
-                     objects))
-          (prn (.-stones this)))))}))
+        (let [objects (sc/object-props tilemap 0)
+              stones (map (fn [{:keys [x y gid]}]
+                            (.setScale (.staticSprite (-> this .-physics .-add) (* x 1.5) (* y 1.5) "items" (- gid 1261)) 1.5))
+                          objects)
+              npcs (npc/random-npcs this)]
+          (prn :stones stones :npcs npcs))))}))
 
 (def main (atom nil))
 
@@ -32,11 +32,6 @@
   (let [_main (gen-main-scene usecase tilemap tilesets)]
     (reset! main _main)
     _main))
-
-;; (* (.random js/Math)
-;;    (-> @main .-sys .-game .-canvas .-width))
-;; (* (.random js/Math)
-;;    (-> @main .-sys .-game .-canvas .-height))
 
 ;;     const npcs = randomNPCs(this);
 ;;     this._player = new Player(this);

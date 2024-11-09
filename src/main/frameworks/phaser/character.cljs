@@ -1,10 +1,8 @@
-(ns keystone.frameworks.phaser.character
+(ns frameworks.phaser.character
   (:require ["phaser" :as phaser]))
 
 (def animations phaser/Animations)
 (def scene phaser/Scene)
-
-(clj->js {:a 3})
 
 (defn setup-animations [anims key]
   (doseq [[start end action-name]
@@ -33,19 +31,18 @@
 ;;     );
 ;;   }
 
-(defn gen-character [{:keys [scene key x y dynamic?]}]
+(defn gen-character [& {:keys [scene key x y dynamic?]}]
+  (prn :gen-char scene key x y dynamic?)
   (let [sprite (if dynamic?
                  (.sprite (-> scene .-physics .-add) x y key)
-                 (.staticSpriteSprite (-> scene .-physics .-add) x y key))]
+                 (.staticSprite (-> scene .-physics .-add) x y key))]
     (setup-animations (.-anims sprite) key)
     (if dynamic?
       (do (.setCollideWorldBounds sprite true)
           (.setCircle sprite 25, 65, 90))
-      (.setSize (.-body sprite) 50, 100, 40)
-      ;; (.play)
-      )
-    {:scene scene
-     :sprite sprite}))
+      (.setSize (.-body sprite) 50, 100, 40))
+    (.play sprite "idle-down" (not dynamic?)))
+  sprite)
 
 ;; export class Character {
 ;;   private scene: Scene;

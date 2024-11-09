@@ -1,8 +1,9 @@
 (ns keystone.components.entities.npc
-  (:require [keystone.frameworks.phaser.character :refer [gen-character]]))
+  (:require [frameworks.phaser.character :refer [gen-character]]))
 
-;; import { Scene } from "phaser";
-;; import { Character } from "./character";
+(defn gen-npc [scene key x y]
+  (prn :gen-npc)
+  (gen-character :scene scene :key key :x x :y y :dynamic? false))
 
 ;; export class NPC extends Character {
 ;;   constructor(scene: Scene, key: string, x: number, y: number) {
@@ -22,4 +23,9 @@
 ;;   );
 
 (defn random-npcs [scene]
-  (do (map #(gen-character scene "nerd" 300 300) (range 3))))
+  (map (fn [_]
+         (gen-npc scene "nerd"
+                  (* (.random js/Math)
+                     (-> scene .-sys .-game .-canvas .-width))
+                  (* (.random js/Math)
+                     (-> scene .-sys .-game .-canvas .-height)))) (range 30)))
