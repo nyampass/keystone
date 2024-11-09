@@ -1,4 +1,4 @@
-(ns keystone.services.phaser
+(ns frameworks.phaser.core
   (:require [integrant.core :as ig]
             ["phaser" :as phaser]))
 
@@ -15,9 +15,8 @@
                           :autoCenter (-> phaser .-Scale .-CENTER_BOTH),
                           :width width,
                           :height height},
-                  :scene  scenes})]
+                  :scene (clj->js scenes)})]
     (phaser/Game. config)))
 
-(defmethod ig/init-key :services/phaser [_ opts]
+(defmethod ig/init-key :frameworks/phaser [_ opts]
   (gen-game opts))
-

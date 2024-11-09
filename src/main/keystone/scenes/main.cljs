@@ -1,39 +1,37 @@
 (ns keystone.scenes.main
   (:require [integrant.core :as ig]
             [shadow.cljs.modern :refer [defclass]]
-            [keystone.scenes.base :refer [Base add-tileset-image! create-layer!]]))
+            [frameworks.phaser.scene :as sc]
+            [keystone.components.entities.npc :as npc]
+            ;; [keystone.components.entities.stone :refer [gen-stone]]
+            ))
 
-(defclass Main
-  (extends Base)
+(defn gen-main-scene [usecase tilemap tilesets]
+  (sc/gen-scene
+   :main
+   {:created
+    (fn [this]
+      (sc/disable-cursor this)
+      (let [{:keys [name width height]} tilemap
+            _ (prn [name width height tilemap])
+            tilemap (sc/gen-tilemap this (cljs.core/name name) width height)
+            tilesets (clj->js (map #(sc/add-tileset-image! tilemap %)
+                                   tilesets))]
+        (prn :hoge tilemap tilesets)
+        (sc/create-layer! tilemap "ground" tilesets 1.5)
+        (let [objects (sc/object-props tilemap 0)
+              stones (map (fn [{:keys [x y gid]}]
+                            (.setScale (.staticSprite (-> this .-physics .-add) (* x 1.5) (* y 1.5) "items" (- gid 1261)) 1.5))
+                          objects)
+              npcs (npc/random-npcs this)]
+          (prn :stones stones :npcs npcs))))}))
 
-  (field usecase)
-  (field setup-fn)
-  (field tilemap)
-  (field tilesets)
-
-  (constructor [this usecase tilemap tilesets]
-               (prn :constructor)
-               (super #js {:key "main"})
-               (set! (.-usecase this) usecase)
-               (set! (.-setup-fn this)
-                     (fn [this]
-                       (set! (.-tilemap this) (let [{:keys [name width height]} tilemap]
-                                                (.gen-tilemap this (cljs.core/name name) width height)))
-                       (set! (.-tilesets this) (clj->js (map #(add-tileset-image! (.-tilemap this) %)
-                                                             tilesets)))
-                       (create-layer! (.-tilemap this) "ground" (.-tilesets this) 1.5))))
-
-  Object
-  (create [this]
-          (prn :create)
-          (.disable-cursor this)
-          (setup-fn this)))
-
+(def main (atom nil))
 
 (defmethod ig/init-key :scenes/main [_ {:keys [usecase tilemap tilesets]}]
-  (Main. usecase tilemap tilesets))
-
-;;     const { stones } = entities.generator(this, map.objects[0]);
+  (let [_main (gen-main-scene usecase tilemap tilesets)]
+    (reset! main _main)
+    _main))
 
 ;;     const npcs = randomNPCs(this);
 ;;     this._player = new Player(this);
