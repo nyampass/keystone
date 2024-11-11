@@ -17,19 +17,18 @@
                              :frameRate 36
                              :repeat -1}))))
 
+(defn flip-x! [sprite flip-x?]
+  (set! (.-flipX sprite) flip-x?))
 
-;; (defn play [name random?]
-;;   )
-;;   play(name: string, isRandom: boolean = false) {
-;;     this.flipX(name.endsWith("-right"));
-;;     this.sprite.play(
-;;       {
-;;         key: name.replace(/-right$/, "-left"),
-;;         startFrame: isRandom ? Math.floor(Math.random() * 20) : 0,
-;;       },
-;;       true
-;;     );
-;;   }
+(defn play [sprite name random?]
+  (flip-x! sprite (.endsWith name "-right"))
+  (.play sprite (clj->js {:key (.replace name #"-right$" "-left")
+                          :startFrame (if random? (.floor js/Math (* (.random js/Math) 20)) 0)})
+         true))
+
+(defn follow-camera [scene character]
+  (.startFollow (-> scene .-cameras .-main) character true))
+
 
 (defn gen-character [& {:keys [scene key x y dynamic?]}]
   (prn :gen-char scene key x y dynamic?)
@@ -41,8 +40,8 @@
       (do (.setCollideWorldBounds sprite true)
           (.setCircle sprite 25, 65, 90))
       (.setSize (.-body sprite) 50, 100, 40))
-    (.play sprite "idle-down" (not dynamic?)))
-  sprite)
+    (play sprite "idle-down" (not dynamic?))
+    sprite))
 
 ;; export class Character {
 ;;   private scene: Scene;
@@ -93,9 +92,6 @@
 ;;   }
 
 
-;;   followCamera() {
-;;     this.scene.cameras.main.startFollow(this.sprite, true);
-;;   }
 
 ;;   collider(target: Character, fn: () => void) {
 ;;     this.scene.physics.add.collider(this.sprite, target.sprite, fn);

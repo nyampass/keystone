@@ -1,8 +1,21 @@
-(ns keystone.components.entities.player)
+(ns keystone.models.player
+  (:require [frameworks.phaser.character :as pc]))
 
 ;; import { Scene } from "phaser";
 ;; import { Character } from "./character";
 ;; import { Direction } from "../../infra/adapter/input";
+
+(def direction->play-names {:right "walk-right"
+                            :left "walk-left"
+                            :up "walk-up"
+                            :down "walk-down"})
+
+(defn gen-player [scene]
+  (let [player   (pc/gen-character :scene scene :key "player"
+                                   :x (/ (-> scene .-sys .-game .-canvas .-width) 2)
+                                   :y (/ (-> scene .-sys .-game .-canvas .-height) 2)
+                                   :dynamic? true)]
+    (pc/follow-camera scene player)))
 
 ;; const direction2playName = new Map<Direction, string>([
 ;;   [Direction.right, "walk-right"],
@@ -15,18 +28,6 @@
 ;;   direction?: Direction;
 
 ;;   moveSpeed: number = 320;
-
-;;   constructor(scene: Scene) {
-;;     super(
-;;       scene,
-;;       "player",
-;;       scene.sys.game.canvas.width / 2,
-;;       scene.sys.game.canvas.height / 2,
-;;       true
-;;     );
-
-;;     this.followCamera();
-;;   }
 
 ;;   idle() {
 ;;     this.direction = undefined;
