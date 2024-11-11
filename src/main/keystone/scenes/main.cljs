@@ -5,35 +5,49 @@
             [keystone.models.npc :as npc]
             [keystone.models.player :as pl]))
 
-(defn gen-main-scene [usecase tilemap tilesets]
-  (ps/gen-scene
-   :main
-   {:created
-    (fn [this]
-      (ps/disable-cursor this)
-      (let [{:keys [name width height]} tilemap
-            _ (prn [name width height tilemap])
-            tilemap (ps/gen-tilemap this (cljs.core/name name) width height)
-            tilesets (clj->js (map #(ps/add-tileset-image! tilemap %)
-                                   tilesets))]
-        (prn :hoge tilemap tilesets)
-        (ps/create-layer! tilemap "ground" tilesets 1.5)
-        (let [objects (ps/object-props tilemap 0)
-              stones (map (fn [{:keys [x y gid]}]
-                            (.setScale (.staticSprite (-> this .-physics .-add) (* x 1.5) (* y 1.5) "items" (- gid 1261)) 1.5))
-                          objects)
-              npcs (npc/random-npcs this)
-              player (pl/gen-player this)]
-          (prn :stones stones :npcs npcs :player player))
-        (ps/create-layer! tilemap "overlay" tilesets 1.5)))
+(defn move-player [player key]
+  (prn :a key)
+  (when-let [[anim, flip?] ({:left ["walk-left", false],
+                             :right ["walk-left", true],
+                             :up ["walk-up", false],
+                             :down ["walk-down", false]} key)]
+    (prn :move player anim)
+    (.play player anim)
+    (pl/flip-x! player flip?)
+    ()))
 
-    :key-down
-    (fn [this key]
-      (prn :down key))
+(defn gen-main-scene [_usecase tilemap tilesets]
+  (let [state (atom {:player nil})]
+    (ps/gen-scene
+     :main
+     {:created
+      (fn [this]
+        (ps/disable-cursor this)
+        (let [{:keys [name width height]} tilemap
+              _ (prn [name width height tilemap])
+              tilemap (ps/gen-tilemap this (cljs.core/name name) width height)
+              tilesets (clj->js (map #(ps/add-tileset-image! tilemap %)
+                                     tilesets))]
+          (prn :hoge tilemap tilesets)
+          (ps/create-layer! tilemap "ground" tilesets 1.5)
+          (let [objects (ps/object-props tilemap 0)
+                stones (map (fn [{:keys [x y gid]}]
+                              (.setScale (.staticSprite (-> this .-physics .-add) (* x 1.5) (* y 1.5) "items" (- gid 1261)) 1.5))
+                            objects)
+                npcs (npc/random-npcs this)
+                player (pl/gen-player this)]
+            (prn :stones stones :npcs npcs :player player)
+            (swap! state assoc :player player))
+          (ps/create-layer! tilemap "overlay" tilesets 1.5)))
 
-    :key-up
-    (fn [this key]
-      (prn :up key))}))
+      :key-down
+      (fn [_ key]
+        (prn @state)
+        (move-player (:player @state) key))
+
+      :key-up
+      (fn [_ key]
+        (prn :up key))})))
 
 ;;     stones?.forEach((stone) => {
 ;;       console.log(stone);

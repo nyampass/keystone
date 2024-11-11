@@ -1,6 +1,8 @@
 (ns keystone.models.player
   (:require [frameworks.phaser.character :as pc]))
 
+(def flip-x! pc/flip-x!)
+
 ;; import { Scene } from "phaser";
 ;; import { Character } from "./character";
 ;; import { Direction } from "../../infra/adapter/input";
@@ -15,7 +17,8 @@
                                    :x (/ (-> scene .-sys .-game .-canvas .-width) 2)
                                    :y (/ (-> scene .-sys .-game .-canvas .-height) 2)
                                    :dynamic? true)]
-    (pc/follow-camera scene player)))
+    (pc/follow-camera scene player)
+    player))
 
 ;; const direction2playName = new Map<Direction, string>([
 ;;   [Direction.right, "walk-right"],

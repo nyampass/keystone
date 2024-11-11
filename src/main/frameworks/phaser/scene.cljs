@@ -53,7 +53,10 @@
 (defn start-scene! [scene next]
   (.start (.-scene scene) (name next)))
 
-(def key-code-map {:arrowleft :arrow-left})
+(def key-code-map {:arrowleft :left,
+                   :arrowup :up,
+                   :arrowright :right,
+                   :arrowdown :down})
 
 (defn- key->key-code [key]
   (let [key-code (-> key .-code .toLowerCase keyword)]
