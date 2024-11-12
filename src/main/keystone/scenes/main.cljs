@@ -1,40 +1,56 @@
 (ns keystone.scenes.main
   (:require [integrant.core :as ig]
-            [shadow.cljs.modern :refer [defclass]]
-            [frameworks.phaser.scene :as sc]
-            [keystone.components.entities.npc :as npc]
-            ;; [keystone.components.entities.stone :refer [gen-stone]]
-            ))
+            [frameworks.phaser.scene :as ps]
+            [frameworks.phaser.debug :as pd]
+            [keystone.models.npc :as npc]
+            [keystone.models.player :as pl]))
 
-(defn gen-main-scene [usecase tilemap tilesets]
-  (sc/gen-scene
-   :main
-   {:created
-    (fn [this]
-      (sc/disable-cursor this)
-      (let [{:keys [name width height]} tilemap
-            _ (prn [name width height tilemap])
-            tilemap (sc/gen-tilemap this (cljs.core/name name) width height)
-            tilesets (clj->js (map #(sc/add-tileset-image! tilemap %)
-                                   tilesets))]
-        (prn :hoge tilemap tilesets)
-        (sc/create-layer! tilemap "ground" tilesets 1.5)
-        (let [objects (sc/object-props tilemap 0)
-              stones (map (fn [{:keys [x y gid]}]
-                            (.setScale (.staticSprite (-> this .-physics .-add) (* x 1.5) (* y 1.5) "items" (- gid 1261)) 1.5))
-                          objects)
-              npcs (npc/random-npcs this)]
-          (prn :stones stones :npcs npcs))))}))
+(defn move-player [player key]
+  (prn :move-player player key)
+  (when-let [move-key (#{:up :right :down :left} key)]
+    (pl/move player move-key)))
 
-(def main (atom nil))
+(defn idle-player [player]
+  (pl/idle player))
 
-(defmethod ig/init-key :scenes/main [_ {:keys [usecase tilemap tilesets]}]
-  (let [_main (gen-main-scene usecase tilemap tilesets)]
-    (reset! main _main)
-    _main))
+(defn gen-main-scene [_usecase tilemap tilesets]
+  (let [state (atom {:player nil})]
+    (ps/gen-scene
+     :main
+     {:created
+      (fn [this]
+        (ps/disable-cursor this)
+        (let [{:keys [name width height]} tilemap
+              _ (prn [name width height tilemap])
+              tilemap (ps/gen-tilemap this (cljs.core/name name) width height)
+              tilesets (clj->js (map #(ps/add-tileset-image! tilemap %)
+                                     tilesets))]
+          (prn :hoge tilemap tilesets)
+          (ps/create-layer! tilemap "ground" tilesets 1.5)
+          (let [objects (ps/object-props tilemap 0)
+                stones (map (fn [{:keys [x y gid]}]
+                              (.setScale (.staticSprite (-> this .-physics .-add) (* x 1.5) (* y 1.5) "items" (- gid 1261)) 1.5))
+                            objects)
+                npcs (npc/random-npcs this)
+                player (pl/gen-player this)]
+            (prn :stones stones :npcs npcs :player player)
+            (swap! state assoc :player player))
+          (ps/create-layer! tilemap "overlay" tilesets 1.5)))
 
-;;     const npcs = randomNPCs(this);
-;;     this._player = new Player(this);
+      :key-down
+      (fn [_ key]
+        (prn @state)
+        (move-player (:player @state) key))
+
+      :key-up
+      (fn [_ key]
+        (prn :up key)
+        (idle-player (:player @state)))
+
+      :update
+      (fn [this]
+        (pl/update (:player @state)))})))
+
 ;;     stones?.forEach((stone) => {
 ;;       console.log(stone);
 ;;       this.physics.add.collider(this._player.sprite, stone.sprite, () => {
@@ -299,3 +315,8 @@
 ;;     console.log("Switched Scene : " + data["id"]);
 ;;   }
 ;; }
+
+(defmethod ig/init-key :scenes/main [_ {:keys [usecase tilemap tilesets]}]
+  (let [main (gen-main-scene usecase tilemap tilesets)]
+    (pd/set-main-scene! main)
+    main))

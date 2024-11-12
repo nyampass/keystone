@@ -53,6 +53,26 @@
 (defn start-scene! [scene next]
   (.start (.-scene scene) (name next)))
 
+(def key-code-map {:arrowleft :left,
+                   :arrowup :up,
+                   :arrowright :right,
+                   :arrowdown :down})
+
+(defn- key->key-code [key]
+  (let [key-code (-> key .-code .toLowerCase keyword)]
+    (get key-code-map key-code key-code)))
+
+(defn- handle-key-down [scene {:keys [key-down]} key]
+  (prn :key (-> key .-code .toLowerCase))
+  (when key-down
+    (when-let [key-code (key->key-code key)]
+      (key-down scene key-code))))
+
+(defn- handle-key-up [scene {:keys [key-up]} key]
+  (when key-up
+    (when-let [key-code (key->key-code key)]
+      (key-up scene key-code))))
+
 (defclass BaseScene
   (extends phaser/Scene)
   (field callbacks)
@@ -71,8 +91,17 @@
              (preload this)))
 
   (create [this]
+          (.on (-> this .-input .-keyboard)
+               "keydown" (fn [key] (handle-key-down this callbacks key)))
+          (.on (-> this .-input .-keyboard)
+               "keyup" (fn [key] (handle-key-up this callbacks key)))
+
           (when-let [created (:created callbacks)]
-            (created this))))
+            (created this)))
+
+  (update [this]
+          (when-let [update (:update callbacks)]
+            (update this))))
 
 
 (defn gen-scene [scene-name callbacks]
