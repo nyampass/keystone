@@ -6,15 +6,12 @@
             [keystone.models.player :as pl]))
 
 (defn move-player [player key]
-  (prn :a key)
-  (when-let [[anim, flip?] ({:left ["walk-left", false],
-                             :right ["walk-left", true],
-                             :up ["walk-up", false],
-                             :down ["walk-down", false]} key)]
-    (prn :move player anim)
-    (.play player anim)
-    (pl/flip-x! player flip?)
-    ()))
+  (prn :move-player player key)
+  (when-let [move-key (#{:up :right :down :left} key)]
+    (pl/move player move-key)))
+
+(defn idle-player [player]
+  (pl/idle player))
 
 (defn gen-main-scene [_usecase tilemap tilesets]
   (let [state (atom {:player nil})]
@@ -47,7 +44,12 @@
 
       :key-up
       (fn [_ key]
-        (prn :up key))})))
+        (prn :up key)
+        (idle-player (:player @state)))
+
+      :update
+      (fn [this]
+        (pl/update (:player @state)))})))
 
 ;;     stones?.forEach((stone) => {
 ;;       console.log(stone);

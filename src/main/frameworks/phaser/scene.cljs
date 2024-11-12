@@ -97,7 +97,11 @@
                "keyup" (fn [key] (handle-key-up this callbacks key)))
 
           (when-let [created (:created callbacks)]
-            (created this))))
+            (created this)))
+
+  (update [this]
+          (when-let [update (:update callbacks)]
+            (update this))))
 
 
 (defn gen-scene [scene-name callbacks]
